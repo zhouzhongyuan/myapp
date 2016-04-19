@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
-const APPID = 'wx739b9f74ab475e99';
-const SECRET = '87fd54b03415de53dffef7d3a9368fca';
+
+var wechatConfig = require('./wechat.config.js');
+const APPID = wechatConfig.APPID;
+const SECRET = wechatConfig.SECRET;
 const https = require('https');
 var tokenData = {};
 var firstOpen = true;
