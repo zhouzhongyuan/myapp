@@ -2,9 +2,9 @@
  {
      "button":[
      {	
-          "type":"click",
-          "name":"今日歌曲",
-          "key":"V1001_TODAY_MUSIC"
+          "type":"view",
+          "name":"登录页面",
+          "url":"http://qttzqqkqlw.proxy.qqbrowser.cc/"
       },
       {
            "name":"菜单",
