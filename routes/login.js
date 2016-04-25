@@ -1,21 +1,17 @@
 var express = require('express');
 var router = express.Router();
-
 var wechatConfig = require('./wechat.config.js');
 const APPID = wechatConfig.APPID;
 const SECRET = wechatConfig.SECRET;
-
 var https = require('https');
 var http = require('http');
 var request = require('request');
-
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
-//var NodeRSA = require('node-rsa');
 var NodeRSA = require('../libs/rsa.js');
-//var Base64 = require('js-base64').Base64;
-
-
+var Base64 = require('js-base64').Base64;
+var redis = require("redis"),
+    client = redis.createClient();
 /*
 * 代理登录
 * input: user pwd
@@ -26,25 +22,49 @@ var NodeRSA = require('../libs/rsa.js');
 * 问题:1.绑定openID和yigo user 之后,用户可能会修改密码
 *     2.sql server尽量不使用mongo,简直大炮打蚊子,需要找个sql server.
 * */
-
 /* GET users listing. */
-router.get('/', (req, res, next) => {
-    //1.1处理input
+router.get('/tryLogin', async((req, res, next) => {
+    console.log('try logi uri ',req.url);
+    var openId = req.query.openid;
+    //search redis
+    client.hgetall(openId, async(function (err, obj) {
+        console.log(' trylogin openid:',obj)
+        if(err!==null || obj === null){
+            console.log(err,obj);
+            res.json({success:false,error:'no this openId'});
+            res.end();
+
+        }else {
+            var logInfo = await(getLogInfo(obj.user,obj.pwd));
+            res.json(logInfo);
+            console.log(logInfo);
+            res.end();
+        }
+    }));
+}));
+router.get('/login', async((req, res, next) => {
+    console.log('login url',req.url);
     const user = req.query.user;
     const pwd = req.query.pwd;
-    //1.2向yigo获取加密的密码
-
-
-
-});
+    const openId = req.query.openid;
+    console.log('login pwd & openid ',pwd,openId);
+    var logInfo = await(getLogInfo(user,pwd));
+    //保存到数据库
+    if(logInfo.success){
+        console.log('login openid',openId);
+        if(openId){
+            saveData(user,openId,pwd);
+        }
+    }
+    res.json(logInfo);
+    res.end();
+}));
 //getPublicKey();
-
 module.exports = router;
-
 function getPublicKey(){
     return new Promise(function (resolve, reject) {
-        const data ={"url":"http://1.1.8.67:8089/yigo/servlet","clientID":"","isWeb":true,"service":"GetPublicKey","async":false,"mode":1,"locale":"en-US","timezone":"Asia/Shanghai"};
-        const url = 'http://1.1.8.67:8089/yigo/servlet';
+        const data ={"url":"http://1.1.8.26:8089/yigo/servlet","clientID":"","isWeb":true,"service":"GetPublicKey","async":false,"mode":1,"locale":"en-US","timezone":"Asia/Shanghai"};
+        const url = 'http://1.1.8.26:8089/yigo/servlet';
         request.post({url:url, form:data},function(err, response, body){
             if(err){
                 reject(err);
@@ -58,13 +78,11 @@ function getPublicKey(){
         })
     })
 }
-
 function auth(user,pwd){
-    console.log(user,pwd);
     return new Promise(function(resolve,reject){
         "use strict";
         const data = {
-            "url":"http://1.1.8.67:8089/yigo/servlet",
+            "url":"http://1.1.8.26:8089/yigo/servlet",
             "clientID":"",
             "user":user,
             "password":pwd,
@@ -72,18 +90,12 @@ function auth(user,pwd){
             "service":"Authenticate",
             "mode":1,
             "locale":"en-US"};
-        const url = 'http://1.1.8.67:8089/yigo/servlet';
+        const url = 'http://1.1.8.26:8089/yigo/servlet';
         request.post({url:url, form:data},function(err, response, body){
             if(err){
-                console.log(err);
                 reject(err);
             }
-            if (!err && response.statusCode == 200) {
-                //var body = JSON.parse(body);
-                console.log(body);
-                resolve(body);
-            }else{
-                console.log(body);
+            if (!err) {
                 resolve(body);
             }
         })
@@ -93,23 +105,40 @@ function pwdEncrypt(pwd,publicKey){
     var rsa = new NodeRSA();
     rsa.setPublic(publicKey.modulus, publicKey.exponent);
     pwd = rsa.encrypt(pwd);
-
-    var Base64 = require('js-base64').Base64;
-    //var Base64 = new Base64();
     pwd = Base64.encode(pwd);
-    console.log(pwd);
     return pwd;
 }
-var start = async (function () {
-    const user = 'admin';
-    var pwd = '';
-    // 在这里使用起来就像同步代码那样直观
-    console.log('start');
+var getLogInfo = async (function (user,pwd) {
     var publicKey = await (getPublicKey());
     var pwd = await (pwdEncrypt(pwd,publicKey));
     var authInfo = await(auth(user,pwd));
-    console.log(authInfo);
-    console.log('end');
+    //包装一下数据
+    authInfo = JSON.parse(authInfo);
+    if(authInfo.data){
+        authInfo.success = true;
+    }
+    return authInfo;
 });
-
-start();
+function saveData(user,openId,pwd){
+    //保存到数据库
+    client.HMSET(openId, {
+        "user": user, // NOTE: key and value will be coerced to strings
+        "pwd": pwd
+    },redis.print);
+};
+/*function getOpenId(code){
+    return new Promise(function(resolve,reject){
+        var url = `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${APPID}&secret=${SECRET}&code=${code}&grant_type=authorization_code`;
+        console.log(url);
+        https.get(url, (res) => {
+            res.on('data', (data) => {
+                data = JSON.parse(data);
+                console.log(data);
+                resolve(data.openid);
+            });
+        }).on('error', (e) => {
+            console.log(e);
+            reject(e);
+        });
+    });
+};*/
