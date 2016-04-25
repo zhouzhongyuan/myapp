@@ -33,7 +33,6 @@ router.get('/tryLogin', async((req, res, next) => {
             console.log(err,obj);
             res.json({success:false,error:'no this openId'});
             res.end();
-
         }else {
             var logInfo = await(getLogInfo(obj.user,obj.pwd));
             res.json(logInfo);
@@ -126,19 +125,3 @@ function saveData(user,openId,pwd){
         "pwd": pwd
     },redis.print);
 };
-/*function getOpenId(code){
-    return new Promise(function(resolve,reject){
-        var url = `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${APPID}&secret=${SECRET}&code=${code}&grant_type=authorization_code`;
-        console.log(url);
-        https.get(url, (res) => {
-            res.on('data', (data) => {
-                data = JSON.parse(data);
-                console.log(data);
-                resolve(data.openid);
-            });
-        }).on('error', (e) => {
-            console.log(e);
-            reject(e);
-        });
-    });
-};*/
