@@ -12,6 +12,9 @@ var login = require('./routes/login');
 var tryLogin = require('./routes/tryLogin');
 var user = require('./routes/user');
 var openid = require('./routes/openid');
+var jsapiTicket = require('./routes/jsapiTicket');
+//var jsapiTicket = require('./routes/jsapiTicket').router;
+var signature = require('./routes/signature').router;
 var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -26,11 +29,19 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 app.use('/', routes);
 app.use('/users', users);
-app.use('/token', token);
+app.use('/token', function(req, res){
+  res.json(token.tokenData);
+  res.end();
+});
 //app.use('/login', login);
 //app.use('/tryLogin', tryLogin);
 app.use('/user', user);
 app.use('/openid', openid);
+app.use('/jsapiTicket', function(req, res){
+  res.json(jsapiTicket);
+  res.end();
+});
+app.use('/signature', signature);
 app.use('/',login);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

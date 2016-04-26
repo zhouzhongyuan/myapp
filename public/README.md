@@ -4,7 +4,7 @@
         {
             "type": "view", 
             "name": "登录页面", 
-            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx739b9f74ab475e99&redirect_uri=http%3A%2F%2Fe5b1cd8e.ngrok.io%2F%23%2Fhome%2FReceiptView&response_type=code&scope=snsapi_userinfo&state=STATE&connect_redirect=1#wechat_redirect"
+            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx739b9f74ab475e99&redirect_uri=http%3A%2F%2F046871de.ngrok.io%2F%23%2Fhome%2FReceiptView&response_type=code&scope=snsapi_userinfo&state=STATE&connect_redirect=1#wechat_redirect"
         }, 
         {
             "name": "菜单", 
@@ -29,4 +29,4 @@
     ]
 }
  ```
-5d0550c5.ngrok.io
+046871de.ngrok.io
