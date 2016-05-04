@@ -15,7 +15,7 @@ refreshTicket();
 setInterval(refreshTicket, 2 * 60 * 60 * 1000);
 router.get('/', (req, res, next)=> {
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-    fullUrl = 'http://192.168.1.101/';
+    fullUrl = 'http://192.168.1.116/';
     console.log(fullUrl);
     Data.data =  sign(jsapiTicket, fullUrl);
     Data.success = true;

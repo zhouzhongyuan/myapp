@@ -12,6 +12,7 @@ var NodeRSA = require('../libs/rsa.js');
 var Base64 = require('js-base64').Base64;
 var redis = require("redis"),
     client = redis.createClient();
+const URL = 'http://1.1.8.23:8089/yigo/servlet';
 /*
 * 代理登录
 * input: user pwd
@@ -62,9 +63,8 @@ router.get('/login', async((req, res, next) => {
 module.exports = router;
 function getPublicKey(){
     return new Promise(function (resolve, reject) {
-        const data ={"url":"http://1.1.8.26:8089/yigo/servlet","clientID":"","isWeb":true,"service":"GetPublicKey","async":false,"mode":1,"locale":"en-US","timezone":"Asia/Shanghai"};
-        const url = 'http://1.1.8.26:8089/yigo/servlet';
-        request.post({url:url, form:data},function(err, response, body){
+        const data ={"url":URL,"clientID":"","isWeb":true,"service":"GetPublicKey","async":false,"mode":1,"locale":"en-US","timezone":"Asia/Shanghai"};
+        request.post({url:URL, form:data},function(err, response, body){
             if(err){
                 reject(err);
             }
@@ -81,7 +81,7 @@ function auth(user,pwd){
     return new Promise(function(resolve,reject){
         "use strict";
         const data = {
-            "url":"http://1.1.8.26:8089/yigo/servlet",
+            "url":URL,
             "clientID":"",
             "user":user,
             "password":pwd,
@@ -89,8 +89,7 @@ function auth(user,pwd){
             "service":"Authenticate",
             "mode":1,
             "locale":"en-US"};
-        const url = 'http://1.1.8.26:8089/yigo/servlet';
-        request.post({url:url, form:data},function(err, response, body){
+        request.post({url:URL, form:data},function(err, response, body){
             if(err){
                 reject(err);
             }
