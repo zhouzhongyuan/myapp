@@ -12,7 +12,7 @@ var NodeRSA = require('../libs/rsa.js');
 var Base64 = require('js-base64').Base64;
 var redis = require("redis"),
     client = redis.createClient();
-const URL = 'http://1.1.8.23:8089/yigo/servlet';
+const URL = wechatConfig.SERVER_PATH;
 /*
 * 代理登录
 * input: user pwd
