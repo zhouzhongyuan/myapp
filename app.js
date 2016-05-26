@@ -16,6 +16,7 @@ var jsapiTicket = require('./routes/jsapiTicket');
 //var jsapiTicket = require('./routes/jsapiTicket').router;
 var signature = require('./routes/signature').router;
 var service = require('./routes/service');
+var baiduPush = require('./routes/baiduPush');
 var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,6 +32,7 @@ app.use(cors());
 app.use('/', routes);
 app.use('/users', users);
 app.use('/service', service);
+app.use('/baiduPush', baiduPush);
 app.use('/token', function(req, res){
   res.json(token.tokenData);
   res.end();
