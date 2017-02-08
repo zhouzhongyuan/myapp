@@ -45,3 +45,12 @@ SECRET
 ### 要求
 
 1. redis-server
+
+
+## run
+
+```
+npm install
+```
+
+redis
