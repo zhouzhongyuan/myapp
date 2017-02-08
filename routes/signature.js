@@ -15,10 +15,11 @@ refreshTicket();
 setInterval(refreshTicket, 2 * 60 * 60 * 1000);
 router.get('/', (req, res, next)=> {
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-    fullUrl = 'http://192.168.1.116/';
+    fullUrl = 'http://jezhang.ngrok.cc';
     console.log(fullUrl);
     Data.data =  sign(jsapiTicket, fullUrl);
     Data.success = true;
+    console.log(Data);
     res.json(Data);
     res.end();
 });

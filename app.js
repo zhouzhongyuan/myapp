@@ -5,10 +5,12 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+require('body-parser-xml')(bodyParser);
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var token = require('./routes/token');
 var login = require('./routes/login');
+var map = require('./routes/map');
 var tryLogin = require('./routes/tryLogin');
 var user = require('./routes/user');
 var openid = require('./routes/openid');
@@ -29,6 +31,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
+//解析xml
+app.use(bodyParser.xml({
+    limit: '1MB',   // Reject payload bigger than 1 MB
+    xmlParseOptions: {
+        normalize: true,     // Trim whitespace inside text nodes
+        normalizeTags: true, // Transform tags to lowercase
+        explicitArray: false // Only put nodes in array if >1
+    }
+}));
 app.use('/', routes);
 app.use('/users', users);
 app.use('/service', service);
@@ -46,6 +57,7 @@ app.use('/jsapiTicket', function(req, res){
   res.end();
 });
 app.use('/signature', signature);
+app.use('/map', map);
 app.use('/',login);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -24,5 +24,55 @@ router.get('/', function (req, res, next) {
     }
 
 });
+router.post('/', function (req, res, next) {
+    console.log('route  / post');
+    // res.writeHead(200, {'Content-Type': 'application/xml'});
+
+    var data = req.body.xml;
+    var resMsg = '<xml>' +
+        '<ToUserName><![CDATA[' + data.fromusername + ']]></ToUserName>' +
+        '<FromUserName><![CDATA[' + data.tousername + ']]></FromUserName>' +
+        '<CreateTime>' + parseInt(new Date().valueOf() / 1000) + '</CreateTime>' +
+        '<MsgType><![CDATA[text]]></MsgType>' +
+        '<Content><![CDATA['+data.content+']]></Content>' +
+        '</xml>';
+    console.log(resMsg);
+
+    if(data.content.match(/黄图/)){
+        console.log('黄图')
+        let media_id = 'z36yLDpsYmZLgF8SEFDgrL9GXdl3ZRR_4tHLcibosGYD7AE3c7EXLIgY7K9-Jtym';
+
+        var resMsg = '<xml>' +
+            '<ToUserName><![CDATA[' + data.fromusername + ']]></ToUserName>' +
+            '<FromUserName><![CDATA[' + data.tousername + ']]></FromUserName>' +
+            '<CreateTime>' + parseInt(new Date().valueOf() / 1000) + '</CreateTime>' +
+            '<MsgType><![CDATA[image]]></MsgType>' +
+            '<Image>' +
+            '   <MediaId><![CDATA['+media_id+']]></MediaId>' +
+            '</Image>' +
+            '</xml>';
+    } else  if(data.content.match(/视频/)){
+        let media_id = 'xOmvljHGmtue37scDoNXCMHi4GGOW8_HrLAXf1D9juEClsbKDplYacde2zh_ZCMY';
+
+        var resMsg = '<xml>' +
+            '<ToUserName><![CDATA[' + data.fromusername + ']]></ToUserName>' +
+            '<FromUserName><![CDATA[' + data.tousername + ']]></FromUserName>' +
+            '<CreateTime>' + parseInt(new Date().valueOf() / 1000) + '</CreateTime>' +
+            '<MsgType><![CDATA[video]]></MsgType>' +
+            '<Video>'+
+            '<MediaId><![CDATA['+media_id+']]></MediaId>'+
+            '<Title><![CDATA[Goolge Drive Intro]]></Title>'+
+            '<Description><![CDATA[360p]]></Description>'+
+            '</Video>'+
+            '</xml>';
+    }
+    res.end(resMsg);
+});
+
+
+
+
+
+
 
 module.exports = router;
